@@ -258,10 +258,15 @@
             }
         }
 
-        function pedir(nombre) {
-            const texto = encodeURIComponent(`Hola Rumeri, me interesa el producto: ${nombre}`);
-            window.open(`https://wa.me/${miTelefono}?text=${texto}`);
-        }
+        function pedir(nombre, codigo) {
+            const texto = encodeURIComponent(
+        `Hola Rumeri 👋! Me interesa:\n` +
+        `📌 ${nombre.toUpperCase()}\n` +
+        `🔢 Código: ${codigo}\n` +
+        `¿Lo tenés?`
+    );
+    window.open(`https://wa.me/${miTelefono}?text=${texto}`);
+}
 
         cargarDatos();
    </script>
