@@ -5,49 +5,144 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Catálogo Rumeri</title>
     <style>
-        body { font-family: 'Segoe UI', sans-serif; background-color: #f4f7f6; margin: 0; padding: 0; display: flex; flex-direction: column; align-items: center; }
-        header { background-color: #2c3e50; color: white; width: 100%; padding: 15px 0; text-align: center; width: 100%; }
+        body { font-family: 'Segoe UI', sans-serif; background-color: #E9ECDB; margin: 0; padding: 0; display: flex; flex-direction: column; align-items: center; }
+        header { background-color: #5C744A; color: white; width: 100%; padding: 15px 0; text-align: center; }
         header h1 { margin: 0; font-size: 1.5em; }
 
-        /* CARRUSEL */
-        .carrusel { width: 100%; max-width: 1000px; height: 180px; margin: 10px 0; position: relative; overflow: hidden; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-        @media (min-width: 768px) { .carrusel { height: 350px; margin: 20px 0; } }
-        .carrusel-track { display: flex; width: 400%; height: 100%; animation: slider 16s infinite ease-in-out; }
-        .carrusel-item { width: 100%; height: 100%; background-size: cover; background-position: center; }
-        @keyframes slider {
-            0%, 20% { margin-left: 0; }
-            25%, 45% { margin-left: -100%; }
-            50%, 70% { margin-left: -200%; }
-            75%, 95% { margin-left: -300%; }
-            100% { margin-left: 0; }
-        }
+        /* 1. Contenedor cuadrado */
+        .carrusel { 
+            width: 95%; 
+            max-width: 500px; /* Al ser cuadrado, mejor que no sea tan gigante */
+            aspect-ratio: 1 / 1; /* Esto lo hace cuadrado automáticamente */
+            margin: 20px auto; 
+            position: relative; 
+            overflow: hidden; 
+            border-radius: 20px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+}
+}
 
-        /* CATÁLOGO */
+@media (min-width: 768px) { .carrusel { height: 350px; } }
+        .carrusel-track { 
+            display: flex; 
+            width: 400%; 
+            height: 100%; 
+            animation: slider 20s infinite ease-in-out; 
+        }
+        .carrusel-item { 
+            width: 25%; /* Cada una ocupa un cuarto del track */
+            height: 100%; 
+        }
+        .carrusel-item img {
+            width: 100%; 
+            height: 100%; 
+            object-fit: contain; /* Asegura que se vea TODO el cupón sin cortarse */
+            background-color: white; /* Rellena si la imagen no cubre todo */
+        }
+        
+        @keyframes slider {
+            0%, 20% { transform: translateX(0); }
+            25%, 45% { transform: translateX(-25%); }
+            50%, 70% { transform: translateX(-50%); }
+            75%, 95% { transform: translateX(-75%); }
+            100% { transform: translateX(0); }
+        }
+        /* CATÁLOGO Y FILTROS */
         .seccion-catalogo { width: 95%; max-width: 1000px; padding: 10px 0; }
         .contenedor-filtros { display: flex; overflow-x: auto; white-space: nowrap; padding: 10px 5px; gap: 10px; margin-bottom: 20px; }
-        .btn-filtro { background-color: white; color: #2c3e50; border: 2px solid #2c3e50; padding: 8px 18px; border-radius: 20px; cursor: pointer; font-weight: bold; font-size: 0.75em; flex-shrink: 0; }
-        .btn-filtro.activo { background-color: #2c3e50; color: white; }
-        .contenedor-productos { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 15px; }
-        @media (min-width: 768px) { .contenedor-productos { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; } }
-        .producto { background: white; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); text-align: center; overflow: hidden; display: flex; flex-direction: column; height: 100%; }
-        .contenedor-img { width: 100%; height: 180px; background: #e0e0e0; }
-        .producto img { width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity 0.5s; }
+        .btn-filtro { 
+    /* Color de cristal verde translúcido */
+    background-color: rgba(92, 116, 74, 0.15); 
+    color: #3e5030; /* Texto verde oscuro para que se lea perfecto */
+    border: 2px solid rgba(92, 116, 74, 0.4); /* Borde verde más definido */
+    padding: 12px 24px; /* Tamaño generoso */
+    border-radius: 50px; 
+    cursor: pointer; 
+    font-weight: 700; 
+    font-size: 0.85em; 
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    backdrop-filter: blur(8px); /* Efecto cristal borroso */
+    transition: all 0.3s ease;
+    flex-shrink: 0;
+}
+
+/* Efecto al tocar o pasar el mouse */
+.btn-filtro:hover {
+    background-color: rgba(92, 116, 74, 0.25);
+    transform: translateY(-2px);
+}
+
+/* El botón seleccionado: Sólido para que no haya duda */
+.btn-filtro.activo { 
+    background-color: #597344 !important; 
+    color: #ffffff !important; 
+    border-color: #597344 !important;
+    box-shadow: 0 5px 15px rgba(89, 115, 68, 0.4);
+}
+        
+        .contenedor-productos { 
+    display: grid; 
+    /* Cambiamos el minmax de 160px a 140px para forzar 2 columnas en móviles pequeños */
+    grid-template-columns: repeat(2, 1fr); 
+    gap: 12px; /* Espacio más pequeño para móvil */
+    padding: 15px;
+    width: 100%;
+}
+
+@media (min-width: 768px) { 
+    .contenedor-productos { 
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); 
+        gap: 20px;
+    } 
+}
+
+/* Ajuste de imagen para que no ocupen tanto espacio vertical en móvil */
+.contenedor-img { 
+    width: 100%; 
+    height: 160px; /* Más bajo para móvil */
+}
+
+@media (min-width: 768px) { 
+    .contenedor-img { height: 210px; } 
+}
+        .producto { 
+            background: white; 
+            border-radius: 18px; 
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2); 
+            overflow: hidden; 
+            display: flex; 
+            flex-direction: column; 
+            height: 100%; 
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* Movimiento suave y elástico */
+}
+
+.producto:hover { 
+    transform: translateY(-10px) scale(1.02); /* Sube y se agranda un poquito */
+    box-shadow: 0 15px 35px rgba(0,0,0,0.4); 
+}
+        .producto img { width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity 0.5s ease-in-out; }
+        
         .info { padding: 12px; flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between; }
-        .precio { color: #27ae60; font-weight: bold; font-size: 1.2em; }
-        .btn-whatsapp { background-color: #25d366; color: white; border: none; padding: 10px; border-radius: 5px; cursor: pointer; font-weight: bold; width: 100%; }
-        #mensaje-carga { font-size: 1.2em; text-align: center; margin-top: 50px; font-weight: bold; }
+        .info h3 { margin: 5px 0; font-size: 0.95em; color: #2c3e50; text-transform: uppercase; }
+        .precio { color: #25D366; font-weight: bold; font-size: 2em; margin: 5px 0; }
+        .btn-whatsapp { background-color: #25D366; color: white; border: none; padding: 10px; border-radius: 5px; cursor: pointer; font-weight: bold; width: 100%; font-size: 0.85em; }
+        
+        #mensaje-carga { font-size: 1.2em; text-align: center; margin-top: 50px; font-weight: bold; color: #2c3e50; }
     </style>
 </head>
 <body>
 
-    <header><h1>Rumeri Accesorios</h1></header>
+    <header>
+        <h1>Rumeri - Catálogo</h1>
+    </header>
 
     <div class="carrusel">
         <div class="carrusel-track">
-            <div class="carrusel-item" style="background-image: url('https://lh3.googleusercontent.com/d/')"></div>
-            <div class="carrusel-item" style="background-image: url('https://lh3.googleusercontent.com/u/0/d/1ku8ZWH6UOwjM049H2NasJgIwPcSIo0RG7')"></div>
-            <div class="carrusel-item" style="background-image: url('https://lh3.googleusercontent.com/u/0/d/1ku8ZWH6UOwjM049H2NasJgIwPcSIo0RG8')"></div>
-            <div class="carrusel-item" style="background-image: url('https://lh3.googleusercontent.com/u/0/d/1ku8ZWH6UOwjM049H2NasJgIwPcSIo0RG9')"></div>
+            <div class="carrusel-item"><img src="https://lh3.googleusercontent.com/u/0/d/1HydWTskusTQwPtTL8gMwHM3K1A70Lszw"></div>
+            <div class="carrusel-item"><img src="https://lh3.googleusercontent.com/u/0/d/1-SqMrzzkNbjqQ5K3tjQm9mVQxL649eVj"></div>
+            <div class="carrusel-item"><img src="https://lh3.googleusercontent.com/u/0/d/1-imYQX09Lta1FhQLNNwa6cAGnlh-Tyxw"></div>
+            <div class="carrusel-item"><img src="https://lh3.googleusercontent.com/u/0/d/1JdYbiOKFt4Xn8-CGjvRrLipnDqxZyZ3o"></div>
         </div>
     </div>
 
@@ -62,73 +157,119 @@
     <script>
         const urlPlanilla = "https://script.google.com/macros/s/AKfycbzr1hu3-vodlxM7VUku7U46IASIa9yAjsYT5SqTqrmfAsYIAiRivWsflzbCbAGW0ROb/exec";
         const miTelefono = "5493624054480"; 
+        const imgDefault = "https://via.placeholder.com/400x400?text=Cargando+Imagen...";
 
         let productosGlobales = [];
-
         async function cargarDatos() {
             try {
                 const respuesta = await fetch(urlPlanilla);
                 const dataRaw = await respuesta.json();
+                
+                // Filtro de Stock > 0 y Nombre válido
                 productosGlobales = dataRaw.filter(fila => {
-                    return fila[1] && fila[1].toString().trim() !== "" && fila[1] !== "Producto" && Number(fila[4]) > 0;
+                    const tieneNombre = fila[1] && fila[1].toString().trim() !== "" && fila[1] !== "Producto";
+                    const tieneStock = fila[4] !== undefined && fila[4] !== "" && Number(fila[4]) > 0;
+                    return tieneNombre && tieneStock;
                 });
+
                 document.getElementById('mensaje-carga').style.display = "none";
                 crearBotonesDinamicos();
                 mostrarProductos(productosGlobales);
             } catch (error) {
-                document.getElementById('mensaje-carga').innerHTML = "Error de conexión.";
+                document.getElementById('mensaje-carga').innerHTML = "Error al conectar con el inventario.";
             }
         }
 
         function crearBotonesDinamicos() {
             const menu = document.getElementById('menu-categorias');
-            const categorias = [...new Set(productosGlobales.map(f => f[17]?.toString().trim().toUpperCase()).filter(c => c))];
-            categorias.sort().forEach(cat => {
-                const btn = document.createElement('button');
-                btn.className = 'btn-filtro'; btn.innerText = cat;
-                btn.onclick = function() { filtrarCat(cat, this); };
-                menu.appendChild(btn);
+            const categoriasUnicas = [...new Set(productosGlobales
+                .map(fila => fila[17] ? fila[17].toString().trim().toUpperCase() : "")
+                .filter(cat => cat !== "")
+            )];
+
+            categoriasUnicas.sort().forEach(cat => {
+                const boton = document.createElement('button');
+                boton.className = 'btn-filtro';
+                boton.innerText = cat;
+                boton.onclick = function() { filtrarCat(cat, this); };
+                menu.appendChild(boton);
             });
         }
 
         function mostrarProductos(lista) {
             const contenedor = document.getElementById('lista-productos');
             contenedor.innerHTML = ""; 
+            
             lista.forEach(fila => {
-                let urlImagen = "https://via.placeholder.com/400x400?text=Rumeri";
-                let celda = fila[18]?.toString().trim() || "";
+                let urlImagen = imgDefault;
+                let celdaImagen = fila[18] ? fila[18].toString().trim() : "";
 
-                if (celda.includes("drive.google.com")) {
-                    const id = celda.match(/\/d\/([^\/]+)/)?.[1];
-                    if (id) urlImagen = `https://lh3.googleusercontent.com/u/0/d/1F7d-xvsr8qBN9eDM6yKRcRQB4tFDzsh40{id}`; // CORREGIDO AQUÍ
-                } else if (celda.startsWith("http")) {
-                    urlImagen = celda;
+                if (celdaImagen.includes("http")) {
+                    urlImagen = celdaImagen;
+                    if (urlImagen.includes("drive.google.com")) {
+                        const match = urlImagen.match(/\/d\/([^\/]+)/);
+                        if (match && match[1]) {
+                            // Usamos el servidor de miniaturas de Google para que sea más rápido
+                            urlImagen = `https://lh3.googleusercontent.com/d/${match[1]}=s400`;
+                        }
+                    }
                 }
                 
                 contenedor.innerHTML += `
                     <div class="producto">
-                        <div class="contenedor-img"><img src="${urlImagen}" onload="this.style.opacity=1" loading="lazy"></div>
+                        <div class="contenedor-img">
+                        <img src="${urlImagen}" 
+                            alt="${fila[1]}" 
+                            style="cursor: zoom-in;" 
+                            onclick="hacerZoom('${urlImagen}')"
+                            onload="this.style.opacity=1" 
+                            onerror="this.src='https://via.placeholder.com/400?text=Rumeri+Joyas'; this.style.opacity=1" 
+                            loading="lazy">
+                    </div>
                         <div class="info">
-                            <div><span style="font-size:0.7em;color:#999">ID: ${fila[0]}</span><h3>${fila[1]}</h3></div>
-                            <p class="precio">$${fila[3]}</p>
-                            <button class="btn-whatsapp" onclick="pedir('${fila[0]}', '${fila[1]}')">Me interesa</button>
+                            <div>
+                                <span style="color: #bdc3c7; font-size: 0.75em;">ID: ${fila[0]}</span>
+                                <h3>${fila[1]}</h3>
+                            </div>
+                            <p class="precio">$${fila[3] || '---'}</p>
+                            <button class="btn-whatsapp" onclick="pedir('${fila[1]}')">Pedir por WhatsApp</button>
                         </div>
-                    </div>`;
+                    </div>
+                `;
             });
         }
-
-        function filtrarCat(cat, btn) {
+        // Nueva función para ver la imagen en grande
+        function hacerZoom(url) {
+            const modal = document.getElementById('modalZoom');
+            const img = document.getElementById('imgZoom');
+            img.src = url;
+            modal.style.display = 'flex';
+        }
+        function filtrarCat(categoria, boton) {
             document.querySelectorAll('.btn-filtro').forEach(b => b.classList.remove('activo'));
-            btn.classList.add('activo');
-            mostrarProductos(cat === 'TODOS' ? productosGlobales : productosGlobales.filter(f => f[17]?.toString().toUpperCase().trim() === cat));
+            boton.classList.add('activo');
+            if (categoria === 'TODOS') {
+                mostrarProductos(productosGlobales);
+            } else {
+                const filtrados = productosGlobales.filter(fila => 
+                    fila[17] && fila[17].toString().toUpperCase().trim() === categoria
+                );
+                mostrarProductos(filtrados);
+            }
         }
 
-        function pedir(id, nombre) {
-            const msg = encodeURIComponent(`Hola Rumeri 👋! Me interesa:\n📌 *${nombre}*\n🔢 Código: ${id}\n¿Tienen disponibilidad?`);
-            window.open(`https://wa.me/5493624054480?text=${msg}`);
+        function pedir(nombre) {
+            const texto = encodeURIComponent(`Hola Rumeri, me interesa el producto: ${nombre}`);
+            window.open(`https://wa.me/${miTelefono}?text=${texto}`);
         }
 
         cargarDatos();
-    </script>
+   </script>
+
+    <div id="modalZoom" style="display:none; position:fixed; z-index:9999; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); align-items:center; justify-content:center; cursor:pointer;" onclick="this.style.display='none'">
+        <span style="position:absolute; top:20px; right:30px; color:white; font-size:50px; font-weight:bold;">&times;</span>
+        <img id="imgZoom" style="max-width:90%; max-height:85%; border-radius:8px; box-shadow:0 0 25px rgba(255,255,255,0.2); object-fit:contain;">
+    </div>
+
 </body>
 </html>
