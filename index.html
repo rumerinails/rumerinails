@@ -232,8 +232,9 @@
                                 <h3>${fila[1]}</h3>
                             </div>
                             <p class="precio">$${fila[3] || '---'}</p>
-                            <button class="btn-whatsapp" onclick="pedir('${fila[1]}')">Pedir por WhatsApp</button>
-                        </div>
+                            <button class="btn-whatsapp" onclick="pedir('${fila[1]}', '${fila[0]}')">
+    Pedir por WhatsApp
+</button>
                     </div>
                 `;
             });
@@ -259,12 +260,16 @@
         }
 
         function pedir(nombre, codigo) {
-            const texto = encodeURIComponent(
+    // Si el código es undefined o vacío, ponemos "---"
+    const codigoLimpio = (codigo && codigo !== 'undefined') ? codigo : "Consultar";
+    
+    const texto = encodeURIComponent(
         `Hola Rumeri 👋! Me interesa:\n` +
         `📌 ${nombre.toUpperCase()}\n` +
-        `🔢 Código: ${codigo}\n` +
+        `🔢 Código: ${codigoLimpio}\n` +
         `¿Lo tenés?`
     );
+    
     window.open(`https://wa.me/${miTelefono}?text=${texto}`);
 }
 
