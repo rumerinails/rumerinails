@@ -108,11 +108,24 @@
 
         .contenedor-filtros {
             display: flex;
-            overflow-x: auto;
-            white-space: nowrap;
-            padding: 10px 5px;
+            flex-wrap: wrap;
+            /* Permite que los botones bajen si no entran, o se acomoden */
+            justify-content: center;
+            /* ¡ESTO LOS CENTRA! */
+            padding: 15px 5px;
             gap: 10px;
             margin-bottom: 20px;
+
+            /* Ocultamos la barra de scroll para que se vea más limpio */
+            scrollbar-width: none;
+            /* Firefox */
+            -ms-overflow-style: none;
+            /* IE y Edge */
+        }
+
+        /* Ocultar barra de scroll en Chrome y Safari */
+        .contenedor-filtros::-webkit-scrollbar {
+            display: none;
         }
 
         .btn-filtro {
@@ -221,23 +234,84 @@
             text-transform: uppercase;
         }
 
-        .precio {
-            color: #25D366;
-            font-weight: bold;
-            font-size: 2em;
-            margin: 5px 0;
+        .contenedor-precio {
+            margin: 10px 0;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .precio-viejo {
+            color: #95a5a6;
+            text-decoration: line-through;
+            /* Tacha el precio original */
+            font-size: 0.85em;
+            margin: 0;
+        }
+
+        .precio-nuevo {
+            color: #1a1a1a;
+            /* Color oscuro y elegante */
+            font-size: 1.6rem;
+            /* Bien grande como pediste */
+            font-weight: 800;
+            /* Negrita máxima */
+            margin: 0;
+            line-height: 1;
+        }
+
+        .badge-descuento {
+            background-color: #e8f5e9;
+            /* Un verde muy clarito */
+            color: #27ae60;
+            /* Texto verde fuerte */
+            font-size: 0.8rem;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-weight: 700;
+            display: inline-block;
+            align-self: flex-start;
+            border: 1px solid #27ae60;
+            /* Un borde fino queda muy bien */
         }
 
         .btn-whatsapp {
             background-color: #25D366;
             color: white;
             border: none;
-            padding: 10px;
-            border-radius: 5px;
+            padding: 8px 12px;
+            /* Reducimos un poco el alto para compensar el logo más grande */
+            border-radius: 50px;
             cursor: pointer;
-            font-weight: bold;
+            font-weight: 700;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            /* Aumentamos el espacio a 10px para que el logo luzca mejor */
             width: 100%;
-            font-size: 0.85em;
+            margin-top: 10px;
+            white-space: nowrap;
+            transition: all 0.3s ease;
+        }
+
+        .btn-whatsapp:hover {
+            background-color: #128C7E;
+            transform: scale(1.02);
+        }
+
+        /* Ajuste para el icono (sea imagen o SVG) */
+        .btn-whatsapp img,
+        .btn-whatsapp svg {
+            width: 26px;
+            /* Subimos de 20px a 26px para que se note más */
+            height: 26px;
+            /* Mantenemos proporción */
+            display: block;
+            flex-shrink: 0;
+            /* Ajuste de color por si es SVG */
+            fill: currentColor;
         }
 
         #mensaje-carga {
@@ -280,25 +354,24 @@
         .intermedio-busqueda h2 {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             color: #1a1a1a;
-            /* Un color casi negro, muy elegante */
             font-size: 2rem;
-            /* Antes era 1.4, ahora es mucho más grande */
             font-weight: 800;
-            /* Esto es el máximo de negrita (Bold) */
-            margin: 0;
+            /* Ajustamos el margin: 20px arriba, 0 a los lados, 15px abajo */
+            margin: 20px 0 15px 0;
             letter-spacing: -0.5px;
-            /* Hace que las letras estén un poquito más juntas, estilo premium */
             text-transform: none;
-            /* Mantener mayúsculas y minúsculas como las escribas */
+            text-align: center;
+            /* Asegura que el texto esté siempre al medio */
         }
 
-        /* Ajuste para que en celulares no se vea gigante y quepa en una sola línea */
+        /* Ajuste para celulares */
         @media (max-width: 600px) {
             .intermedio-busqueda h2 {
                 font-size: 1.5rem;
+                margin: 15px 0 10px 0;
+                /* Un poquito menos de espacio en el celu */
             }
         }
-
     </style>
 </head>
 
@@ -390,34 +463,47 @@
                     if (urlImagen.includes("drive.google.com")) {
                         const match = urlImagen.match(/\/d\/([^\/]+)/);
                         if (match && match[1]) {
-                            // Usamos el servidor de miniaturas de Google para que sea más rápido
                             urlImagen = `https://lh3.googleusercontent.com/d/${match[1]}=s400`;
                         }
                     }
                 }
 
+                // --- LÓGICA DE PRECIOS CON 15% DE DESCUENTO ---
+                let precioOriginal = parseFloat(fila[3]) || 0;
+                let precioDescuento = Math.round(precioOriginal * 0.85); // Aplicamos el 15% y redondeamos
+
                 contenedor.innerHTML += `
-                    <div class="producto" data-categoria="${fila[17] ? fila[17].toString().trim() : ''}">
-                        <div class="contenedor-img">
-                            <img src="${urlImagen}" 
-                                alt="${fila[1]}" 
-                                style="cursor: zoom-in;" 
-                                onclick="hacerZoom('${urlImagen}')"
-                                onload="this.style.opacity=1" 
-                                onerror="this.src='https://via.placeholder.com/400?text=Rumeri+Joyas'; this.style.opacity=1" 
-                                loading="lazy">
-                        </div>
-                        <div class="info">
-                            <div>
-                                <span style="color: #bdc3c7; font-size: 0.75em;">ID: ${fila[0]}</span>
-                                <h3>${fila[1]}</h3>
-                            </div>
-                            <p class="precio">$${fila[3] || '---'}</p>
-                            <button class="btn-whatsapp" onclick="pedir('${fila[1]}', '${fila[0]}')">
-    Pedir por WhatsApp
-</button>
+            <div class="producto" data-categoria="${fila[17] ? fila[17].toString().trim() : ''}">
+                <div class="contenedor-img">
+                    <img src="${urlImagen}" 
+                        alt="${fila[1]}" 
+                        style="cursor: zoom-in;" 
+                        onclick="hacerZoom('${urlImagen}')"
+                        onload="this.style.opacity=1" 
+                        onerror="this.src='https://via.placeholder.com/400?text=Rumeri+Joyas'; this.style.opacity=1" 
+                        loading="lazy">
+                </div>
+                <div class="info">
+                    <div>
+                        <span style="color: #bdc3c7; font-size: 0.75em;">ID: ${fila[0]}</span>
+                        <h3>${fila[1]}</h3>
                     </div>
-                `;
+                    
+                    <div class="contenedor-precio">
+                        <p class="precio-viejo">$${precioOriginal.toLocaleString('es-AR')}</p>
+                        <p class="precio-nuevo">$${precioDescuento.toLocaleString('es-AR')}</p>
+                        <span class="badge-descuento">15% OFF ONLINE</span>
+                    </div>
+
+                    <button class="btn-whatsapp" onclick="pedir('${fila[1]}', '${fila[0]}')">
+    Pedir por 
+    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 448 512" style="margin-left: 10px;">
+        <path fill="#ffffff" d="M380.9 97.1C339 55.1 283.2 32 223.9 32c-122.4 0-222 99.6-222 222 0 39.1 10.2 77.3 29.6 111L0 480l117.7-30.9c32.7 17.8 69.4 27.2 106.2 27.2 122.4 0 222-99.6 222-222 0-59.3-23-115.1-65-117.1zM223.9 445.3c-33.2 0-65.7-8.9-94-25.7l-6.7-4-69.8 18.3L72 365.2l-4.4-7c-18.5-29.4-28.2-63.3-28.2-98.2 0-101.7 82.8-184.5 184.6-184.5 49.3 0 95.6 19.2 130.4 54.1 34.8 34.9 56.2 81.2 56.1 130.5 0 101.8-84.9 184.6-186.6 185.2zm101.2-138.2c-5.5-2.8-32.8-16.2-37.9-18-5.1-1.9-8.8-2.8-12.5 2.8-3.7 5.6-14.3 18-17.6 21.8-3.2 3.7-6.5 4.2-12 1.4-5.5-2.8-23.2-8.5-44.2-27.1-16.4-14.6-27.4-32.7-30.6-38.2-3.2-5.6-.3-8.6 2.4-11.3 2.5-2.5 5.6-6.5 8.3-9.8 2.8-3.2 3.7-5.5 5.5-9.3 1.9-3.7.9-6.9-.5-9.7-1.4-2.8-12.5-30.1-17.1-41.2-4.5-10.8-9.1-9.3-12.5-9.5-3.2-.2-6.9-.2-10.6-.2-3.7 0-9.7 1.4-14.8 6.9-5.1 5.6-19.4 19-19.4 46.3 0 27.3 19.9 53.7 22.6 57.4 2.8 3.7 39.1 59.7 94.8 83.8 13.3 5.7 23.5 9.2 31.6 11.8 13.3 4.2 25.5 3.6 35.2 2.1 10.7-1.6 32.8-13.4 37.4-26.4 4.6-13 4.6-24.1 3.2-26.4-1.3-2.5-5-3.9-10.5-6.6z"/>
+    </svg>
+</button>
+                </div>
+            </div>
+        `; // <--- IMPORTANTE: Asegúrate de que termine así
             });
         }
         // Nueva función para ver la imagen en grande
