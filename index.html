@@ -314,6 +314,14 @@
             fill: currentColor;
         }
 
+        .btn-whatsapp:active {
+            transform: scale(0.95);
+            /* El botón se achica un pelín al tocarlo */
+            background-color: #128C7E;
+            /* Se oscurece un poco el verde */
+            transition: 0.1s;
+        }
+
         #mensaje-carga {
             font-size: 1.2em;
             text-align: center;
@@ -371,6 +379,57 @@
                 margin: 15px 0 10px 0;
                 /* Un poquito menos de espacio en el celu */
             }
+        }
+
+        #modalZoom {
+            display: none;
+            position: fixed;
+            z-index: 99999;
+            /* Aseguramos que esté por encima de todo */
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        #imgZoom {
+            /* AQUÍ ESTÁ EL CAMBIO: Ahora permitimos que use casi el 100% real */
+            max-width: 98vw;
+            max-height: 98vh;
+            border-radius: 4px;
+            object-fit: contain;
+            /* Para que no se deforme */
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+
+            /* Estado inicial para la animación */
+            transform: scale(0.7);
+            transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        /* Clase para activar la animación y el tamaño grande */
+        #modalZoom.visible {
+            opacity: 1;
+        }
+
+        #modalZoom.visible #imgZoom {
+            transform: scale(1.1);
+            /* Lo agrandamos un 10% extra del original */
+        }
+
+        .cerrar-modal {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            color: white;
+            font-size: 50px;
+            font-weight: bold;
+            z-index: 100000;
         }
     </style>
 </head>
@@ -463,14 +522,33 @@
                     if (urlImagen.includes("drive.google.com")) {
                         const match = urlImagen.match(/\/d\/([^\/]+)/);
                         if (match && match[1]) {
-                            urlImagen = `https://lh3.googleusercontent.com/d/${match[1]}=s400`;
+                            urlImagen = `https://lh3.googleusercontent.com/d/${match[1]}=s800`;
                         }
                     }
                 }
 
-                // --- LÓGICA DE PRECIOS CON 15% DE DESCUENTO ---
+                // --- LÓGICA DE PRECIOS DINÁMICA (COLUMNA U) ---
                 let precioOriginal = parseFloat(fila[3]) || 0;
-                let precioDescuento = Math.round(precioOriginal * 0.85); // Aplicamos el 15% y redondeamos
+
+                // La Columna U es el índice 20 (A=0, B=1... U=20)
+                // Tomamos el valor de la columna U, si está vacía es 0
+                let porcentajeDescuento = parseFloat(fila[20]) || 0;
+
+                let precioDescuento;
+                let tieneDescuento = porcentajeDescuento > 0;
+
+                if (tieneDescuento) {
+                    // Calculamos el descuento basado en el número de la columna U (ej: 0.15)
+                    let precioCalculado = precioOriginal * (1 - porcentajeDescuento);
+                    // Aplicamos tu regla de redondeo a 100
+                    precioDescuento = Math.round(precioCalculado / 100) * 100;
+                } else {
+                    // Si no hay descuento, el precio final es el original
+                    precioDescuento = precioOriginal;
+                }
+
+                // Para el badge de texto (ej: "15% OFF")
+                let textoDescuento = (porcentajeDescuento * 100).toFixed(0) + "% OFF ONLINE";
 
                 contenedor.innerHTML += `
             <div class="producto" data-categoria="${fila[17] ? fila[17].toString().trim() : ''}">
@@ -490,10 +568,14 @@
                     </div>
                     
                     <div class="contenedor-precio">
-                        <p class="precio-viejo">$${precioOriginal.toLocaleString('es-AR')}</p>
-                        <p class="precio-nuevo">$${precioDescuento.toLocaleString('es-AR')}</p>
-                        <span class="badge-descuento">15% OFF ONLINE</span>
-                    </div>
+    ${tieneDescuento ? `
+        <p class="precio-viejo">$${precioOriginal.toLocaleString('es-AR')}</p>
+        <p class="precio-nuevo">$${precioDescuento.toLocaleString('es-AR')}</p>
+        <span class="badge-descuento">${textoDescuento}</span>
+    ` : `
+        <p class="precio-nuevo">$${precioOriginal.toLocaleString('es-AR')}</p>
+    `}
+</div>
 
                     <button class="btn-whatsapp" onclick="pedir('${fila[1]}', '${fila[0]}')">
     Pedir por 
@@ -506,12 +588,26 @@
         `; // <--- IMPORTANTE: Asegúrate de que termine así
             });
         }
-        // Nueva función para ver la imagen en grande
         function hacerZoom(url) {
             const modal = document.getElementById('modalZoom');
             const img = document.getElementById('imgZoom');
+
             img.src = url;
             modal.style.display = 'flex';
+
+            // Este pequeño delay es vital para que se vea el efecto de agrandado
+            setTimeout(() => {
+                modal.classList.add('visible');
+            }, 10);
+        }
+
+        function cerrarZoom() {
+            const modal = document.getElementById('modalZoom');
+            modal.classList.remove('visible');
+
+            setTimeout(() => {
+                modal.style.display = 'none';
+            }, 500); // Espera a que termine la animación de salida
         }
         function filtrarCat(categoria, boton) {
             document.querySelectorAll('.btn-filtro').forEach(b => b.classList.remove('activo'));
@@ -562,13 +658,9 @@
         cargarDatos();
     </script>
 
-    <div id="modalZoom"
-        style="display:none; position:fixed; z-index:9999; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); align-items:center; justify-content:center; cursor:pointer;"
-        onclick="this.style.display='none'">
-        <span
-            style="position:absolute; top:20px; right:30px; color:white; font-size:50px; font-weight:bold;">&times;</span>
-        <img id="imgZoom"
-            style="max-width:90%; max-height:85%; border-radius:8px; box-shadow:0 0 25px rgba(255,255,255,0.2); object-fit:contain;">
+    <div id="modalZoom" onclick="cerrarZoom()">
+        <span class="cerrar-modal">&times;</span>
+        <img id="imgZoom">
     </div>
     <a href="https://www.instagram.com/rumeli.nails/" class="btn-flotante-ig" target="_blank" rel="noopener noreferrer">
         <svg viewBox="0 0 24 24" fill="white" width="32" height="32" style="pointer-events: none;">
