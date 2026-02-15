@@ -276,6 +276,29 @@
         .btn-flotante-ig i {
             font-style: normal;
         }
+
+        .intermedio-busqueda h2 {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #1a1a1a;
+            /* Un color casi negro, muy elegante */
+            font-size: 2rem;
+            /* Antes era 1.4, ahora es mucho más grande */
+            font-weight: 800;
+            /* Esto es el máximo de negrita (Bold) */
+            margin: 0;
+            letter-spacing: -0.5px;
+            /* Hace que las letras estén un poquito más juntas, estilo premium */
+            text-transform: none;
+            /* Mantener mayúsculas y minúsculas como las escribas */
+        }
+
+        /* Ajuste para que en celulares no se vea gigante y quepa en una sola línea */
+        @media (max-width: 600px) {
+            .intermedio-busqueda h2 {
+                font-size: 1.5rem;
+            }
+        }
+
     </style>
 </head>
 
@@ -300,6 +323,9 @@
     <div id="banner-fijo" style="display: none; width: 100%; text-align: center; padding: 10px 0;">
         <img src="https://lh3.googleusercontent.com/u/0/d/1iAsF9OHjhTmnga6x7MH_ASBODCfOfDcd"
             style="width: 100%; max-height: 300px; object-fit: cover; border-radius: 8px;">
+    </div>
+    <div class="intermedio-busqueda">
+        <h2>¿Qué te gustaría buscar hoy?</h2>
     </div>
     <div class="seccion-catalogo">
         <div class="contenedor-filtros" id="menu-categorias">
